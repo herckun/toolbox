@@ -1,50 +1,45 @@
 ---
+import { Footer } from "../components/react/Footer";
+import { Navbar } from "../components/react/Navbar";
+import { APP_DESCRIPTION, APP_NAME } from "../consts/main";
+import { Toaster } from "sonner";
 interface Props {
-	title: string;
+  title?: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="en" class="bg-base-100">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={APP_DESCRIPTION} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{APP_NAME} {title}</title>
+  </head>
+  <body class="p-4 pb-0 h-screen flex flex-col justify-between">
+    <Toaster client:only="react" />
+    <Navbar client:only="react" />
+    <slot />
+  </body>
+  <Footer />
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-</style>
+<script>
+  import { toast } from "sonner";
+  document.addEventListener("astro:page-load", (event) => {
+    const currentUrl = new URL(window.location.href);
+    const searchParams = currentUrl.searchParams;
+    const message = searchParams.get("message");
+
+    if (message) {
+      toast.info(message, {
+        id: "system-message",
+      });
+      searchParams.delete("message");
+      window.history.replaceState({}, "", currentUrl.href);
+    }
+  });
+</script>
