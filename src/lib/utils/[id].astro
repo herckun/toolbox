@@ -1,0 +1,19 @@
+---
+import { PasteEditor } from "../../../components/react/PasteEditor";
+import Layout from "../../../layouts/Layout.astro";
+
+const { id } = Astro.params;
+if (!id) {
+    return new Response(null, {
+        status: 404,
+    });
+}
+---
+
+<Layout>
+    <div
+        class="flex bg-base-content/5 self-center w-4/5 rounded-box p-4 flex-1 h-fit"
+    >
+        <PasteEditor mode="view" pasteId={id} client:only="react" />
+    </div>
+</Layout>

@@ -1,0 +1,30 @@
+---
+import { About, PasteEditor } from "../../../components/react/PasteEditor";
+import Layout from "../../../layouts/Layout.astro";
+import { UserHandler } from "../../../lib/handlers/UserHandler";
+
+const { id } = Astro.params;
+const url = new URL(Astro.url);
+const searchParams = new URLSearchParams(url.search);
+const password = searchParams.get("password") ?? undefined;
+const user = await UserHandler.getAuthentificatedUser(Astro);
+---
+
+<Layout>
+    <div class="h-full w-full flex flex-col md:flex-row p-2 gap-2">
+        <PasteEditor
+            mode={id ? "view" : "create"}
+            pasteId={id}
+            password={password}
+            user={user}
+            client:only="react"
+        >
+            <div
+                slot="fallback"
+                class="skeleton w-full flex-1 bg-base-content/10"
+            >
+            </div>
+        </PasteEditor>
+        <About />
+    </div>
+</Layout>

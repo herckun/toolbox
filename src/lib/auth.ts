@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/db";
 import { account, session, user, verification } from "../db/schema";
 import { sendEmail } from "./email";
-import { APP_PATH, APP_URL } from "../consts/paths";
+import { APP_URL } from "../consts/paths";
 
 export const auth = betterAuth({
   account: {

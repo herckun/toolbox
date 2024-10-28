@@ -1,8 +1,22 @@
 ---
+import { APP_NAME } from "../consts/main";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="">
-  <h1>Hello</h1>
-  <button class="btn btn-primary">Click me</button>
+    <div class="hero bg-base-200 min-h-screen">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">
+                    Hi and welcome to my {APP_NAME}
+                </h1>
+                <p class="py-6">
+                    This website is a collection of mini web tools and apps that
+                    I have created to help me learn new technologies and
+                    frameworks. I hope you find them useful too.
+                </p>
+                <button class="btn btn-primary">Get Started</button>
+            </div>
+        </div>
+    </div>
 </Layout>

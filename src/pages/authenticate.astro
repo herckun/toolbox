@@ -4,19 +4,17 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="">
-  <div
-    class="flex md:flex-row gap-2 items-center h-[90vh] p-2 md:p-24 flex-1 flex-col-reverse"
-  >
-    <img
-      src="./assets/img/login-anim.gif"
-      class="rounded-box h-1/2 w-full md:w-2/3 md:h-full object-contain bg-gradient-to-tr from-secondary to-accent backdrop-blur-sm p-4"
-    />
-    <div
-      class="flex-1 w-full h-full items-center justify-center flex bg-base-content/5 rounded-box backdrop-blur-sm"
-    >
-      <div class="w-96">
-        <AuthenticateBox client:only="react" />
-      </div>
+    <div class="h-full w-full flex flex-col md:flex-row p-2 gap-2">
+        <img
+            src="./assets/img/login-anim.gif"
+            class="rounded-box w-full md:w-2/3 h-72 md:h-[88vh] object-contain bg-gradient-to-tr from-secondary to-accent backdrop-blur-sm p-4 md:p-32"
+        />
+        <div
+            class="md:h-[88vh] grow place-items-center place-content-center items-center justify-center flex bg-base-content/10 rounded-box backdrop-blur-sm"
+        >
+            <div class="md:w-96 flex-1">
+                <AuthenticateBox client:only="react" />
+            </div>
+        </div>
     </div>
-  </div>
 </Layout>

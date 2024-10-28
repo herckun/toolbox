@@ -1,45 +1,67 @@
 ---
+import "@fontsource/geist-sans/200.css";
+import "@fontsource/geist-sans/300.css";
+import "@fontsource/geist-sans/400.css";
+import "@fontsource/geist-sans/600.css";
+import "@fontsource/geist-sans/800.css";
+
 import { Footer } from "../components/react/Footer";
 import { Navbar } from "../components/react/Navbar";
+import { SideBar } from "../components/react/SideBar";
 import { APP_DESCRIPTION, APP_NAME } from "../consts/main";
 import { Toaster } from "sonner";
 interface Props {
-  title?: string;
+    title?: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="bg-base-100">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content={APP_DESCRIPTION} />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{APP_NAME} {title}</title>
-  </head>
-  <body class="p-4 pb-0 h-screen flex flex-col justify-between">
-    <Toaster client:only="react" />
-    <Navbar client:only="react" />
-    <slot />
-  </body>
-  <Footer />
+<html lang="en" class="bg-base-200" data-theme="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content={APP_DESCRIPTION} />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{APP_NAME} {title}</title>
+    </head>
+    <body
+        class="pb-0 h-fit w-screen max-w-screen min-h-screen gap-0 flex flex-col"
+    >
+        <Navbar client:only="react" />
+        <div class="flex-1 gap-0 flex justify-between">
+            <SideBar client:only="react" />
+            <div class="flex-1 w-full over gap-2 flex flex-col">
+                <div class="h-fit min-h-[93vh] gap-2 flex flex-col">
+                    <Toaster client:only="react" />
+
+                    <slot />
+                </div>
+                <Footer />
+            </div>
+        </div>
+    </body>
 </html>
 <script>
-  import { toast } from "sonner";
-  document.addEventListener("astro:page-load", (event) => {
-    const currentUrl = new URL(window.location.href);
-    const searchParams = currentUrl.searchParams;
-    const message = searchParams.get("message");
+    import { toast } from "sonner";
+    document.addEventListener("astro:page-load", (event) => {
+        const currentUrl = new URL(window.location.href);
+        const searchParams = currentUrl.searchParams;
+        const message = searchParams.get("message");
 
-    if (message) {
-      toast.info(message, {
-        id: "system-message",
-      });
-      searchParams.delete("message");
-      window.history.replaceState({}, "", currentUrl.href);
-    }
-  });
+        if (message) {
+            toast.info(message, {
+                id: "system-message",
+            });
+            searchParams.delete("message");
+            window.history.replaceState({}, "", currentUrl.href);
+        }
+    });
 </script>
+<style>
+    body {
+        font-family: "Geist Sans", sans-serif;
+    }
+</style>

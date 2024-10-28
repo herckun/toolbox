@@ -42,7 +42,7 @@ export const AuthenticateBox = () => {
 
   const cachedPlaceholderPassword = useMemo(
     () => generatePlaceholderPassword(),
-    []
+    [],
   );
 
   const signUp = async () => {
@@ -67,7 +67,7 @@ export const AuthenticateBox = () => {
             id: "auth-error",
           });
         },
-      }
+      },
     );
   };
 
@@ -99,7 +99,7 @@ export const AuthenticateBox = () => {
             id: "auth-error",
           });
         },
-      }
+      },
     );
   };
 
@@ -119,7 +119,7 @@ export const AuthenticateBox = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full  p-2 rounded-box">
+    <div className="flex flex-col gap-2 w-full  px-2 md:px-24 rounded-box ">
       <div role="tablist" className="tabs tabs-boxed bg-neutral-content/5">
         <a
           onClick={() => switchAuthMethod("email")}

@@ -20,13 +20,14 @@ export const CustomInput = (props: {
     minValue?: number;
     maxValue?: number;
     size?: "xxs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+    allowEmpty?: boolean;
   };
   callback?: (value: string) => void;
   onValidityChange?: (isValid: boolean) => void;
   register?: (
     name: string,
     onChange: () => ComponentState,
-    onValidityChange: (isValid: boolean) => void
+    onValidityChange: (isValid: boolean) => void,
   ) => void;
   unregister?: (name: string) => void;
 }) => {
@@ -58,9 +59,11 @@ export const CustomInput = (props: {
         value: inputValue,
         isValid,
       }),
-      (valid) => setIsValid(valid)
+      (valid) => setIsValid(valid),
     );
-
+    if (props.options?.allowEmpty && inputValue.length === 0) {
+      setIsValid(true);
+    }
     return () => {
       if (props.unregister === undefined) return;
       props.unregister(props.name);
@@ -97,7 +100,7 @@ export const CustomInput = (props: {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { value } = e.target;
     if (props.options?.editable) {
@@ -117,12 +120,16 @@ export const CustomInput = (props: {
       message = `Input exceeds the limit of ${props.options.limit} characters.`;
     }
 
-    if (
-      props.options?.allowedChars &&
-      !props.options.allowedChars.test(inputValue)
-    ) {
-      valid = false;
-      message = `${describeAllowedChars(props.options.allowedChars)}`;
+    if (props.options?.allowEmpty && inputValue.length === 0) {
+      valid = true;
+    } else {
+      if (
+        props.options?.allowedChars &&
+        !props.options.allowedChars.test(inputValue)
+      ) {
+        valid = false;
+        message = `${describeAllowedChars(props.options.allowedChars)}`;
+      }
     }
 
     const inputAsNumber = parseFloat(inputValue);
@@ -155,7 +162,7 @@ export const CustomInput = (props: {
         } field contains errors: ${message}`,
         {
           id: props.name,
-        }
+        },
       );
     }
     props.onValidityChange?.(valid);
@@ -165,7 +172,7 @@ export const CustomInput = (props: {
 
   return (
     <div
-      className={`w-full flex max-w-96 flex-col place-content-center gap-px overflow-hidden font-mono relative bg-base-content/0 backdrop-blur-xl rounded-btn ${
+      className={`w-full flex flex-col place-content-center gap-px overflow-hidden font-mono relative bg-base-content/0 backdrop-blur-xl rounded-btn ${
         sizeClasses[currentSize]
       }  border-b transition-all ${
         !isValid && valueChanged ? "border-red-400" : "border-transparent"
@@ -191,7 +198,7 @@ export const CustomInput = (props: {
           <input
             ref={inputRef as React.RefObject<HTMLInputElement>}
             type={isHidden ? "password" : "text"}
-            className={`input outline-none border-0 ring-0 focus:ring-0 focus:outline-none focus:border-0 rounded-t-btn disabled:bg-base-content/5 bg-base-content/5 w-full  ${sizeClasses[currentSize]}`}
+            className={`input outline-none  border-0 ring-0 focus:ring-0 focus:outline-none focus:border-0 rounded-t-btn disabled:bg-base-content/10 bg-base-content/10 placeholder:text-base-content/50 w-full  ${sizeClasses[currentSize]}`}
             value={inputValue}
             placeholder={props.placeholder}
             onChange={handleChange}
@@ -199,19 +206,22 @@ export const CustomInput = (props: {
           />
         )}
         <div
-          className={`absolute right-1 flex gap-1 bg-base-100/90 backdrop-blur-xl p-1 rounded-md ${
+          className={`absolute ${props.options?.limit && debouncedInputValue.length > 0 ? "right-0 top-0 gap-px p-px" : "right-1 gap-1 p-1"}  flex  bg-base-100/50 backdrop-blur-xl  rounded-btn ${
             !props.options?.clipboard && !props.options?.hideContent
               ? "hidden"
               : ""
           }`}
         >
           {props.options?.clipboard && (
-            <button onClick={copyToClipboard} className="rounded-md kbd kbd-sm">
+            <button
+              onClick={copyToClipboard}
+              className="rounded-btn kbd kbd-sm"
+            >
               <Icon icon="ion:clipboard" width={"0.75rem"} />
             </button>
           )}
           {props.options?.type !== "large" && props.options?.hideContent && (
-            <button onClick={switchHidden} className="rounded-md kbd kbd-sm">
+            <button onClick={switchHidden} className="rounded-btn kbd kbd-sm">
               {!isHidden ? (
                 <Icon icon="ion:eye-off" width={"0.75rem"} />
               ) : (
@@ -224,7 +234,7 @@ export const CustomInput = (props: {
 
       {props.options?.limit && debouncedInputValue.length > 0 && (
         <span
-          className={`bg-base-200/80 py-1 px-2 rounded-tl-btn align-middle text-center text-[0.55rem] backdrop-blur-xl flex place-content-center place-items-center text-base-content/80 absolute bottom-0 right-0 ${
+          className={`bg-base-200/80 p-2 rounded-tl-btn align-middle text-center text-[0.50rem] backdrop-blur-xl flex place-content-center place-items-center text-base-content/80 absolute bottom-0 right-0 ${
             inputValue.length > props.options.limit ? "text-red-400" : ""
           }`}
         >

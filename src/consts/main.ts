@@ -1,4 +1,4 @@
-export const APP_NAME = "GistBox";
+export const APP_NAME = "ToolBox";
 export const APP_DESCRIPTION = "PasteBin alternative";
 
 export const CREATOR_NAME = "herc";

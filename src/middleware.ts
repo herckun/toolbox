@@ -4,8 +4,8 @@ import { sequence } from "astro:middleware";
 import { auth } from "./lib/auth";
 import { AUTH_PATH } from "./consts/paths";
 
-const protectedPaths = ["/app/*", "/api/user/*"];
-const excludedPaths: string[] = ["/api/auth/*"];
+const protectedPaths = ["/app", "/api/paste/create", "/api/user/*"];
+const excludedPaths: string[] = ["/api/auth/*", "/api/paste/*"];
 
 export const adminProtection = defineMiddleware(async (context, next) => {
   if (pathcheck(context.url.pathname, ["/admin/*"])) {
@@ -52,7 +52,7 @@ export const rewriteOnResponseStatus = defineMiddleware(
     */
     if (response.status === 500 && response.body === null) {
       const page = await fetch(
-        new Request(new URL("/server-error", context.url).toString())
+        new Request(new URL("/server-error", context.url).toString()),
       );
       return new Response(await page.text(), {
         headers: {
@@ -62,12 +62,12 @@ export const rewriteOnResponseStatus = defineMiddleware(
       });
     }
     return response;
-  }
+  },
 );
 
 export const onRequest = sequence(
   cors,
   handleAuth,
   rewriteOnResponseStatus,
-  adminProtection
+  adminProtection,
 );

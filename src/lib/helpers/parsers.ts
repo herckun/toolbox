@@ -18,6 +18,7 @@ export const RegexPatterns = {
   NameFirstAndLast: /^[A-Z][a-z]+ [A-Z][a-z]+$/,
   TimeHHMM: /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/,
   DecimalUpToTwoPlaces: /^\d+(\.\d{1,2})?$/,
+  Empty: /^$/,
 };
 
 export const describeAllowedChars = (regex: RegExp): string => {

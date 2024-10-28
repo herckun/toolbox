@@ -52,3 +52,37 @@ export const verification = sqliteTable("verification", {
     mode: "timestamp",
   }).notNull(),
 });
+
+export const paste = sqliteTable("paste", {
+  id: text("id").notNull().primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id),
+  passwordHash: text("password_hash"),
+  expiresAt: integer("expiresAt", {
+    mode: "timestamp",
+  }).notNull(),
+  createdAt: integer("createdAt", {
+    mode: "timestamp",
+  }).notNull(),
+  updatedAt: integer("updatedAt", {
+    mode: "timestamp",
+  }).notNull(),
+});
+
+export type InsertUser = typeof user.$inferInsert;
+export type SelectUser = typeof user.$inferSelect;
+
+export type InsertSession = typeof session.$inferInsert;
+export type SelectSession = typeof session.$inferSelect;
+
+export type InsertAccount = typeof account.$inferInsert;
+export type SelectAccount = typeof account.$inferSelect;
+
+export type InsertVerification = typeof verification.$inferInsert;
+export type SelectVerification = typeof verification.$inferSelect;
+
+export type InsertPaste = typeof paste.$inferInsert;
+export type SelectPaste = typeof paste.$inferSelect;

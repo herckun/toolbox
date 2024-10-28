@@ -32,9 +32,11 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="navbar bg-base-content/5 rounded-box backdrop-blur-sm px-2">
+    <div className="h-[5vh] min-h-16 w-full flex place-items-center place-self-center border border-base-content/15   backdrop-blur-sm px-2 z-30">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl rounded-box">{APP_NAME}</a>
+        <a href={APP_URL} className="btn btn-ghost text-xl rounded-box">
+          {APP_NAME}
+        </a>
       </div>
       <div className="flex-none">
         {isFetching ? (
@@ -47,7 +49,7 @@ export const Navbar = () => {
 
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-content/5  backdrop-blur-sm rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-base-300 border border-base-content/25  backdrop-blur-sm rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li onClick={handleLogout}>
                 <a>Logout</a>
@@ -61,7 +63,7 @@ export const Navbar = () => {
             role="button"
             className="btn btn-primary rounded-box "
           >
-            Enter app
+            Sign in
           </div>
         )}
       </div>
