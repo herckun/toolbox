@@ -32,7 +32,7 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="h-[5vh] min-h-16 w-full flex place-items-center place-self-center border border-base-content/15   backdrop-blur-sm px-2 z-30">
+    <div className="h-fit bg-base-200-content/10 w-full flex place-items-center place-self-center border-b border-base-content/15   backdrop-blur-sm px-2 z-30">
       <div className="flex-1">
         <a href={APP_URL} className="btn btn-ghost text-xl rounded-box">
           {APP_NAME}

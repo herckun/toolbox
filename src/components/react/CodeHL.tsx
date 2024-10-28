@@ -48,19 +48,19 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
   };
 
   return (
-    <div className="flex flex-col gap-2  relative grow">
-      <div className="flex gap-1  place-content-center  place-items-center self-end w-full md:w-fit">
+    <div className="flex flex-col gap-2 relative grow ">
+      <div className="flex gap-1  place-content-start  place-items-center self-end w-full md:w-fit">
         <button
           onClick={handleCopy}
           className="btn md:btn-xs btn-ghost bg-base-content/15"
         >
           <Icon icon={"mdi:clipboard"} />
         </button>
-        <div className="text-xs rounded-bl-md">
+        <div className="text-xs rounded-bl-md w-full md:w-fit">
           <select
             defaultValue={lang}
             onChange={handleLangChange}
-            className="select select-ghost bg-base-content/15  md:select-xs w-full  md:max-w-xs"
+            className="select select-ghost bg-base-content/15 grow  md:select-xs w-full  md:max-w-xs"
           >
             {highlight_langs.map((l) => (
               <option key={l} value={l}>

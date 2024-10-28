@@ -27,41 +27,46 @@ const { title } = Astro.props;
         <meta name="generator" content={Astro.generator} />
         <title>{APP_NAME} {title}</title>
     </head>
-    <body
-        class="pb-0 h-fit w-screen max-w-screen min-h-screen gap-0 flex flex-col"
-    >
-        <Navbar client:only="react" />
-        <div class="flex-1 gap-0 flex justify-between">
-            <SideBar client:only="react" />
-            <div class="flex-1 w-full over gap-2 flex flex-col">
-                <div class="h-fit min-h-[93vh] gap-2 flex flex-col">
-                    <Toaster client:only="react" />
+    <Toaster client:only="react" />
 
-                    <slot />
-                </div>
-                <Footer />
+    <body>
+        <div class="flex flex-wrap gap-0 h-screen w-screen">
+            <Navbar client:only="react" />
+            <SideBar client:only="react" />
+            <div class="flex-1">
+                <slot />
+                <Footer client:only="react" />
             </div>
         </div>
     </body>
-</html>
-<script>
-    import { toast } from "sonner";
-    document.addEventListener("astro:page-load", (event) => {
-        const currentUrl = new URL(window.location.href);
-        const searchParams = currentUrl.searchParams;
-        const message = searchParams.get("message");
 
-        if (message) {
-            toast.info(message, {
-                id: "system-message",
-            });
-            searchParams.delete("message");
-            window.history.replaceState({}, "", currentUrl.href);
+    <script>
+        import { toast } from "sonner";
+        document.addEventListener("astro:page-load", (event) => {
+            const currentUrl = new URL(window.location.href);
+            const searchParams = currentUrl.searchParams;
+            const message = searchParams.get("message");
+
+            if (message) {
+                toast.info(message, {
+                    id: "system-message",
+                });
+                searchParams.delete("message");
+                window.history.replaceState({}, "", currentUrl.href);
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: "Geist Sans", sans-serif;
         }
-    });
-</script>
-<style>
-    body {
-        font-family: "Geist Sans", sans-serif;
-    }
-</style>
+        .grid-container {
+            display: grid;
+            grid-template-rows: 5rem;
+            grid-auto-rows: 5rem;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+    </style>
+
+
+</html>

@@ -1,6 +1,6 @@
 ---
 import { About, PasteEditor } from "../../../components/react/PasteEditor";
-import Layout from "../../../layouts/Layout.astro";
+import AppLayout from "../../../layouts/AppLayout.astro";
 import { UserHandler } from "../../../lib/handlers/UserHandler";
 
 const { id } = Astro.params;
@@ -10,8 +10,8 @@ const password = searchParams.get("password") ?? undefined;
 const user = await UserHandler.getAuthentificatedUser(Astro);
 ---
 
-<Layout>
-    <div class="h-full w-full flex flex-col md:flex-row p-2 gap-2">
+<AppLayout>
+    <div class="flex flex-col md:flex-row w-full h-full gap-2">
         <PasteEditor
             mode={id ? "view" : "create"}
             pasteId={id}
@@ -27,4 +27,4 @@ const user = await UserHandler.getAuthentificatedUser(Astro);
         </PasteEditor>
         <About />
     </div>
-</Layout>
+</AppLayout>

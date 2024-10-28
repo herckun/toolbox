@@ -176,7 +176,7 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
     );
   }
   return (
-    <div className="flex flex-col p-4 gap-2 bg-base-100 min-h-[50vh] grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
+    <div className="flex flex-col p-4 gap-2 shrink-0 bg-base-100 min-h-[50vh] md:max-w-[50vw] grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
       <div className="h-full flex flex-col gap-2 justify-between">
         <h1 className="py-2 w-full px-1 text-lg font-semibold">
           {data.title == "none" ? `Paste #${props.pasteId}` : data.title}
@@ -233,7 +233,7 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
 
 export const About = () => {
   return (
-    <div className="flex flex-col p-4 gap-2 bg-base-100 w-full md:w-1/4  rounded-box prose">
+    <div className="flex flex-col p-4 gap-2 bg-base-100 h-fit md:min-h-full w-full md:w-1/4 grow  rounded-box prose">
       <span className="font-semibold">About tool</span>
       <ul className="text-xs md:text-base font-light">
         <li>
