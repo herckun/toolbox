@@ -1,5 +1,8 @@
 ---
+import { UserPastes } from "../../components/react/UserPastes";
 import AppLayout from "../../layouts/AppLayout.astro";
+import { UserHandler } from "../../lib/handlers/UserHandler";
+const user = await UserHandler.getAuthentificatedUser(Astro);
 ---
 
 <AppLayout>
@@ -8,5 +11,6 @@ import AppLayout from "../../layouts/AppLayout.astro";
             <h1 class="text-lg font-semibold">App dashboard</h1>
             <p class="text-md">Here you can quick access your recent activity for any available tools</p>
         </div>
+        <UserPastes userId={user?.id!} client:load />
     </div>
 </AppLayout>

@@ -4,15 +4,23 @@ import { db } from "../../db/db";
 import { generateRandomId, hashedString } from "../helpers/generators";
 import { paste, type SelectPaste } from "../../db/schema";
 import { addDays } from "../helpers/date";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, gt, and, SQL, or, asc, lt } from "drizzle-orm";
 import { validateInput } from "../helpers/validators";
 import { TITLE_MAX_LENGTH } from "../../consts/requirements";
 import { PASTE_PATH } from "../../consts/paths";
+import { decodeBase64ToObject, encodeObjectToBase64 } from "../helpers/encode";
 
 export type Paste = {
   title: string;
   content: string;
   password: string;
+};
+
+export type ResponsePaste = {
+  id: string;
+  title: string;
+  link: string;
+  createdAt: Date;
 };
 
 export class PasteHandler {
@@ -87,12 +95,34 @@ export class PasteHandler {
     return unlockedData;
   }
 
-  static async getPastesForUser(userId: string) {
+  static async getPastesForUser(
+    userId: string,
+    cursor?: string | undefined,
+    pageSize: number = 10
+  ) {
+    let cursorObject: { id: string; createdAt: Date } | undefined;
+    if (cursor) {
+      cursorObject = decodeBase64ToObject(cursor);
+    }
     const query = await db
       .select()
       .from(paste)
-      .where(eq(paste.userId, userId))
-      .orderBy(desc(paste.createdAt));
+      .where(
+        and(
+          eq(paste.userId, userId),
+          cursorObject
+            ? or(
+                lt(paste.createdAt, new Date(cursorObject.createdAt)),
+                and(
+                  eq(paste.createdAt, new Date(cursorObject.createdAt)),
+                  lt(paste.id, cursorObject.id)
+                )
+              )
+            : undefined
+        )
+      )
+      .limit(pageSize)
+      .orderBy(desc(paste.createdAt), desc(paste.id));
     let pastes = [];
     for (let i = 0; i < query.length; i++) {
       pastes.push({
@@ -102,6 +132,14 @@ export class PasteHandler {
         createdAt: query[i].createdAt,
       });
     }
-    return pastes;
+    return {
+      pastes,
+      cursor: query[query.length - 1]
+        ? encodeObjectToBase64({
+            id: query[query.length - 1].id,
+            createdAt: query[query.length - 1].createdAt.getTime(),
+          })
+        : undefined,
+    };
   }
 }

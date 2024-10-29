@@ -1,9 +1,15 @@
 ---
 import Layout from "./Layout.astro";
-console.log("test");
+
+interface Props {
+    title?: string;
+}
+
+const { title } = Astro.props;
+
 ---
 
-<Layout>
+<Layout title={title}>
     <div class="grow h-[93vh] overflow-auto p-2 ">
         <slot />
     </div>

@@ -8,8 +8,14 @@ import { navigate } from "astro:transitions/client";
 import { APP_URL, AUTH_PATH } from "../../consts/paths";
 import { toast } from "sonner";
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
+import { useStore } from "@nanostores/react";
+import { theme } from "../stores/theme";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
+  const [ctheme, setcTheme] = useState("dark");
+  const $theme = useStore(theme);
+
   const { data, isFetching, error } = useQuery(
     {
       queryKey: ["authUser"],
@@ -31,15 +37,37 @@ export const Navbar = () => {
     navigate(`${APP_URL}${AUTH_PATH}`);
   };
 
+  useEffect(() => {
+    setcTheme($theme);
+  }, [$theme]);
+
   return (
     <div className="h-fit bg-base-200-content/10 w-full flex place-items-center place-self-center border-b border-base-content/15   backdrop-blur-sm px-4 py-2 z-30">
       <div className="flex-1">
         <a
           href={APP_URL}
-          className="p-2 bg-base-content/5 hover:bg-base-content/10 transition-all font-extrabold rounded-box"
+          className={`px-4 py-2 flex gap-2 place-content-center place-items-center w-fit ${
+            ctheme == "light"
+              ? "bg-primary/50 hover:bg-primary filter invert"
+              : "bg-base-content/5"
+          } hover:bg-base-content/10 transition-all font-extrabold rounded-box`}
         >
-          <span className="text-primary/80">{APP_NAME_LOGO.split(" ")[0]}</span>
-          <span className="text-primary"> {APP_NAME_LOGO.split(" ")[1]}</span>
+          <img src="/favicon.png" className="w-4 inline-block" />
+          <span>
+            <span
+              className={`text-primary/80 ${
+                ctheme == "light" && "filter invert"
+              }`}
+            >
+              {APP_NAME_LOGO.split(" ")[0]}
+            </span>
+            <span
+              className={`text-primary ${ctheme == "light" && "filter invert"}`}
+            >
+              {" "}
+              {APP_NAME_LOGO.split(" ")[1]}
+            </span>
+          </span>
         </a>
       </div>
       <div className="flex-none">

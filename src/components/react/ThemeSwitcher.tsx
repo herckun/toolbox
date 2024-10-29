@@ -14,7 +14,7 @@ export const ThemeSwitcher = () => {
   };
 
   useEffect(() => {
-    const localTheme = window.localStorage.getItem("theme");
+    const localTheme = window.localStorage.getItem("theme") ?? "dark";
     if (localTheme) {
       handleThemeChange(localTheme as "light" | "dark");
     }

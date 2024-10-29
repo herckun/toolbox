@@ -1,4 +1,4 @@
-import type { Paste } from "../../../lib/handlers/PasteHandler";
+import type { Paste, ResponsePaste } from "../../../lib/handlers/PasteHandler";
 import { generateRandomId } from "../../../lib/helpers/generators";
 
 export const createPaste = async (pasteData: Paste) => {
@@ -30,4 +30,27 @@ export const getPaste = async (id: string, password?: string) => {
     },
   });
   return await f.json();
+};
+
+export const getPastesForUser = async (
+  userId: string,
+  cursor?: string | undefined
+) => {
+  console.log(cursor);
+  cursor = encodeURIComponent(cursor ?? "");
+  console.log(cursor);
+  const baseUrl = location.protocol + "//" + location.host;
+  const url = cursor
+    ? `${baseUrl}/api/paste/user/${userId}/get?cursor=${cursor}`
+    : `${baseUrl}/api/paste/user/${userId}/get`;
+  const f = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return (await f.json()) as {
+    pastes: ResponsePaste[];
+    cursor: string | undefined;
+  };
 };
