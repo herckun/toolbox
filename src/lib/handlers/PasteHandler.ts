@@ -4,9 +4,10 @@ import { db } from "../../db/db";
 import { generateRandomId, hashedString } from "../helpers/generators";
 import { paste, type SelectPaste } from "../../db/schema";
 import { addDays } from "../helpers/date";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { validateInput } from "../helpers/validators";
 import { TITLE_MAX_LENGTH } from "../../consts/requirements";
+import { PASTE_PATH } from "../../consts/paths";
 
 export type Paste = {
   title: string;
@@ -84,5 +85,23 @@ export class PasteHandler {
     }
 
     return unlockedData;
+  }
+
+  static async getPastesForUser(userId: string) {
+    const query = await db
+      .select()
+      .from(paste)
+      .where(eq(paste.userId, userId))
+      .orderBy(desc(paste.createdAt));
+    let pastes = [];
+    for (let i = 0; i < query.length; i++) {
+      pastes.push({
+        id: query[i].id,
+        title: query[i].title,
+        link: `${PASTE_PATH}/${query[i].id}`,
+        createdAt: query[i].createdAt,
+      });
+    }
+    return pastes;
   }
 }

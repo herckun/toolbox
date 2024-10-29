@@ -1,4 +1,4 @@
-import { APP_NAME } from "../../consts/main";
+import { APP_NAME_LOGO } from "../../consts/main";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
 import { fetchAuthUser } from "./data/user";
@@ -15,7 +15,7 @@ export const Navbar = () => {
       queryKey: ["authUser"],
       queryFn: fetchAuthUser,
     },
-    queryClient,
+    queryClient
   );
 
   const handleLogout = async () => {
@@ -32,10 +32,14 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="h-fit bg-base-200-content/10 w-full flex place-items-center place-self-center border-b border-base-content/15   backdrop-blur-sm px-2 z-30">
+    <div className="h-fit bg-base-200-content/10 w-full flex place-items-center place-self-center border-b border-base-content/15   backdrop-blur-sm px-4 py-2 z-30">
       <div className="flex-1">
-        <a href={APP_URL} className="btn btn-ghost text-xl rounded-box">
-          {APP_NAME}
+        <a
+          href={APP_URL}
+          className="p-2 bg-base-content/5 hover:bg-base-content/10 transition-all font-extrabold rounded-box"
+        >
+          <span className="text-primary/80">{APP_NAME_LOGO.split(" ")[0]}</span>
+          <span className="text-primary"> {APP_NAME_LOGO.split(" ")[1]}</span>
         </a>
       </div>
       <div className="flex-none">

@@ -71,7 +71,7 @@ export const PasteEditor = (props: {
   }
 
   return (
-    <div className="flex flex-col p-4 gap-2 bg-base-100 min-h-[50vh] grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden">
+    <div className="flex flex-col p-4 gap-2 bg-base-100 min-h-[80vh] md:min-h-full grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden">
       {!props.user && <NotSignedIn />}
       <h1 className="py-2 w-full px-1 text-lg font-semibold">New Paste</h1>
       {pasteTitle.length > 0 && (
@@ -79,7 +79,7 @@ export const PasteEditor = (props: {
       )}
       <textarea
         onChange={(e) => handleSetPasteContent(e.target.value)}
-        className="textarea w-full grow border-base-content/10"
+        className="textarea w-full grow border-base-content/10 min-h-[50vh]"
         placeholder="Paste your code here"
       ></textarea>
       <div className="w-full flex gap-1">
@@ -92,14 +92,16 @@ export const PasteEditor = (props: {
         </button>
         <button
           onClick={handleCreatePaste}
-          className={`btn btn-primary btn-sm grow  ${canSave() ? "" : "btn-disabled"}`}
+          className={`btn btn-primary btn-sm grow  ${
+            canSave() ? "" : "btn-disabled"
+          }`}
         >
           Create Paste
         </button>
       </div>
       {showSettings && (
-        <div className="w-full flex gap-2">
-          <div className="flex flex-col justify-between p-4 gap-2 bg-base-100 md:max-w-96 w-full rounded-box">
+        <div className="w-full h-fit flex gap-2">
+          <div className="flex h-fit flex-col justify-between p-4 gap-2 bg-base-100 md:max-w-96 w-full rounded-box">
             <span>Paste options</span>
             <CustomInput
               name="title"
@@ -139,7 +141,7 @@ export const PasteEditor = (props: {
 
 const PasteViewer = (props: { pasteId: string; password?: string }) => {
   const [unlockPassword, setunlockPassword] = useState<string | undefined>(
-    undefined,
+    undefined
   );
 
   const { canSave, registerComponent, unregisterComponent } = useFormManager();
@@ -150,14 +152,14 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
         if (unlockPassword || props.password) {
           return await getPaste(
             props.pasteId!,
-            unlockPassword ?? props.password,
+            unlockPassword ?? props.password
           );
         }
         return await getPaste(props.pasteId!);
       },
       enabled: !!props.pasteId,
     },
-    queryClient,
+    queryClient
   );
 
   const handleSetUnlockPassword = (value: string) => {
@@ -172,11 +174,11 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
 
   if (!data || isFetching) {
     return (
-      <div className="skeleton w-full flex-1 min-h-[50vh] bg-base-content/10"></div>
+      <div className="skeleton w-full min-h-[50vh] bg-base-content/10"></div>
     );
   }
   return (
-    <div className="flex flex-col p-4 gap-2 shrink-0 bg-base-100 min-h-[50vh] md:max-w-[50vw] grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
+    <div className="flex flex-col p-4 gap-2 bg-base-100 w-full min-h-[80vh] md:min-h-full rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
       <div className="h-full flex flex-col gap-2 justify-between">
         <h1 className="py-2 w-full px-1 text-lg font-semibold">
           {data.title == "none" ? `Paste #${props.pasteId}` : data.title}
@@ -195,7 +197,7 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
         {!data.requiresPassword && <CodeHL content={data.content} />}
 
         {data.requiresPassword && (
-          <div className="flex flex-col gap-2 grow  place-content-cente justify-center self-center">
+          <div className="flex flex-col gap-2 grow  place-content-center justify-center self-center">
             <span className="font-bold text-lg">
               This paste is password protected
             </span>
@@ -233,7 +235,7 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
 
 export const About = () => {
   return (
-    <div className="flex flex-col p-4 gap-2 bg-base-100 h-fit md:min-h-full w-full md:w-1/4 grow  rounded-box prose">
+    <div className="flex flex-col p-4 gap-2 bg-base-100 w-full h-fit   rounded-box prose">
       <span className="font-semibold">About tool</span>
       <ul className="text-xs md:text-base font-light">
         <li>

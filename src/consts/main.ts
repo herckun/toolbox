@@ -1,4 +1,6 @@
 export const APP_NAME = "ToolBox";
+export const APP_NAME_LOGO = "T B";
+
 export const APP_DESCRIPTION = "PasteBin alternative";
 
 export const CREATOR_NAME = "herc";

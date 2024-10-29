@@ -7,13 +7,6 @@ import { AUTH_PATH } from "./consts/paths";
 const protectedPaths = ["/app", "/api/paste/create", "/api/user/*"];
 const excludedPaths: string[] = ["/api/auth/*", "/api/paste/*"];
 
-export const adminProtection = defineMiddleware(async (context, next) => {
-  if (pathcheck(context.url.pathname, ["/admin/*"])) {
-    //
-  }
-  return next();
-});
-
 export const cors = defineMiddleware((context, next) => {
   const isExcluded = pathcheck(context.url.pathname, excludedPaths);
   if (context.request.method !== "GET" && !isExcluded) {
@@ -52,7 +45,7 @@ export const rewriteOnResponseStatus = defineMiddleware(
     */
     if (response.status === 500 && response.body === null) {
       const page = await fetch(
-        new Request(new URL("/server-error", context.url).toString()),
+        new Request(new URL("/server-error", context.url).toString())
       );
       return new Response(await page.text(), {
         headers: {
@@ -62,12 +55,7 @@ export const rewriteOnResponseStatus = defineMiddleware(
       });
     }
     return response;
-  },
+  }
 );
 
-export const onRequest = sequence(
-  cors,
-  handleAuth,
-  rewriteOnResponseStatus,
-  adminProtection,
-);
+export const onRequest = sequence(cors, handleAuth, rewriteOnResponseStatus);

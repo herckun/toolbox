@@ -11,7 +11,7 @@ const user = await UserHandler.getAuthentificatedUser(Astro);
 ---
 
 <AppLayout>
-    <div class="flex flex-col md:flex-row w-full h-full gap-2">
+    <div class="flex flex-col md:flex-row w-full h-fit min-h-full gap-2">
         <PasteEditor
             mode={id ? "view" : "create"}
             pasteId={id}

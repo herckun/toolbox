@@ -14,7 +14,7 @@ export const SideBar = () => {
   ];
 
   return (
-    <div className="border-r flex flex-col border-base-content/15 justify-between backdrop-blur-sm p-2 z-30  w-fit min-w-24 ">
+    <div className="border-r flex flex-col border-base-content/15 justify-between backdrop-blur-sm p-2 z-30 w-16 md:w-20 ">
       <div className="flex flex-col items-center md:w-full place-items-center place-content-center  justify-between">
         {features.map((feature) => (
           <a
@@ -23,7 +23,7 @@ export const SideBar = () => {
             className="tooltip  tooltip-right"
             data-tip={feature.title}
           >
-            <button className="btn btn-ghost btn-sm md:btn-lg rounded-md bg-base-100">
+            <button className="btn btn-ghost btn-sm md:btn-md rounded-md bg-base-100">
               <Icon icon={feature.icon} width={`1.2rem`} />
             </button>
           </a>
