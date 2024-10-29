@@ -1,17 +1,12 @@
 ---
-import { Navbar } from "../../components/react/Navbar";
-import Layout from "../../layouts/Layout.astro";
+import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
-<Layout title="">
-    <div class="hero bg-base-200 min-h-screen">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-
-                <p class="py-6">
-                Welcome, you can use any of the tools from the sidebar to get started.
-                </p>
-            </div>
+<AppLayout>
+    <div class="flex flex-col  w-full h-fit min-h-full gap-2">
+        <div class="p-4 bg-base-100 rounded-box flex flex-col gap-1">
+            <h1 class="text-lg font-semibold">App dashboard</h1>
+            <p class="text-md">Here you can quick access your recent activity for any available tools</p>
         </div>
     </div>
-</Layout>
+</AppLayout>
