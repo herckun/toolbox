@@ -3,7 +3,7 @@ import { RegexPatterns } from "../../lib/helpers/parsers";
 import { CustomInput } from "./CustomInput";
 import { useFormManager } from "./hooks/useFormManager";
 import { toast } from "sonner";
-import { createPaste, getPaste } from "./data/paste";
+import { createPaste, deletePaste, getPaste } from "./data/paste";
 import { useQuery } from "@tanstack/react-query";
 import { navigate } from "astro:transitions/client";
 import { queryClient } from "./queryClient";
@@ -11,6 +11,7 @@ import { PASTE_PATH } from "../../consts/paths";
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { NotSignedIn } from "./Errors";
 import { CodeHL } from "./CodeHL";
+import { ButtonWithConfirmation } from "./ButtonWithConfirmation";
 
 export const PasteEditor = (props: {
   mode: "create" | "view";
@@ -58,7 +59,15 @@ export const PasteEditor = (props: {
     toast.dismiss("create-paste");
 
     toast.success("Paste created successfully");
-    navigate(`${PASTE_PATH}/${paste.id}`);
+    if (pastePassword) {
+      navigate(
+        `${PASTE_PATH}/${paste.id}?password=${encodeURIComponent(
+          pastePassword
+        )}`
+      );
+    } else {
+      navigate(`${PASTE_PATH}/${paste.id}`);
+    }
   };
 
   if (props.mode == "view" && props.pasteId) {
@@ -125,13 +134,19 @@ export const PasteEditor = (props: {
               options={{
                 editable: true,
                 allowEmpty: true,
-                allowedChars: RegexPatterns.OnlyLetters,
+                allowedChars: RegexPatterns.LettersNumbersAndSpecialChars,
                 limit: 30,
               }}
               callback={handleSetPastePassword}
               register={registerComponent}
               unregister={unregisterComponent}
             ></CustomInput>
+            {pastePassword.length > 0 && (
+              <span className="text-xs px-1 text-base-content/50">
+                Be careful, the content of this paste will be encrypted and you
+                will need the password to view it.
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -140,8 +155,9 @@ export const PasteEditor = (props: {
 };
 
 const PasteViewer = (props: { pasteId: string; password?: string }) => {
+  const [showLink, setShowLink] = useState("normal");
   const [unlockPassword, setunlockPassword] = useState<string | undefined>(
-    undefined
+    props.password
   );
 
   const { canSave, registerComponent, unregisterComponent } = useFormManager();
@@ -149,11 +165,8 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
     {
       queryKey: ["paste", props.pasteId],
       queryFn: async () => {
-        if (unlockPassword || props.password) {
-          return await getPaste(
-            props.pasteId!,
-            unlockPassword ?? props.password
-          );
+        if (unlockPassword) {
+          return await getPaste(props.pasteId!, unlockPassword);
         }
         return await getPaste(props.pasteId!);
       },
@@ -166,27 +179,116 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
     setunlockPassword(value);
   };
 
-  const handleUnlockPaste = async () => {
+  const handleDeletePaste = async () => {
+    toast.loading("Deleting paste...", {
+      id: "delete-paste",
+    });
+    const del = await deletePaste(props.pasteId!);
+    if (!del.ok) {
+      toast.dismiss("delete-paste");
+      toast.error("Failed to delete paste", {
+        id: "delete-paste-error",
+      });
+      return;
+    }
+    toast.dismiss("delete-paste");
+    toast.success("Paste deleted successfully");
+    navigate(PASTE_PATH);
+  };
+
+  const handleUnlockPaste = () => {
     queryClient.invalidateQueries({
       queryKey: ["paste", props.pasteId],
     });
   };
 
-  if (!data || isFetching) {
+  const handleTryAgain = () => {
+    setunlockPassword(undefined);
+    queryClient.invalidateQueries({
+      queryKey: ["paste", props.pasteId],
+    });
+  };
+
+  const handleSetShowLink = (value: string) => {
+    setShowLink(value);
+  };
+
+  if (isFetching) {
     return (
       <div className="skeleton w-full min-h-[50vh] bg-base-content/10"></div>
     );
   }
+  if (error) {
+    return (
+      <div className="flex flex-col p-4 gap-2 bg-base-100 w-full min-h-[80vh] md:min-h-full rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
+        <h1 className="py-2 w-full px-1 text-lg font-semibold">
+          Could not get your paste
+        </h1>
+        <p className="text-base-content px-1">
+          Something went wrong while trying to get your paste, make sure the id
+          and any password you provided are correct
+        </p>
+        <button
+          onClick={handleTryAgain}
+          className="btn btn-sm btn-primary max-w-32"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  const paste_link = `${PASTE_PATH}/${props.pasteId}`;
+  const paste_link_with_password = unlockPassword
+    ? `${PASTE_PATH}/${props.pasteId}?password=${encodeURIComponent(
+        unlockPassword
+      )}`
+    : paste_link;
   return (
     <div className="flex flex-col p-4 gap-2 bg-base-100 w-full min-h-[80vh] md:min-h-full rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden ">
+      {data?.isCreator && (
+        <ButtonWithConfirmation
+          callback={handleDeletePaste}
+          className="btn btn-sm btn-warning  absolute top-1 right-1"
+          value={
+            <span>
+              <Icon
+                icon="mdi:delete"
+                className="align-middle"
+                width={`1.2rem`}
+              />
+            </span>
+          }
+        ></ButtonWithConfirmation>
+      )}
       <div className="h-full flex flex-col gap-2 justify-between">
         <h1 className="py-2 w-full px-1 text-lg font-semibold">
           {data.title == "none" ? `Paste #${props.pasteId}` : data.title}
         </h1>
+        {!data.requiresPassword && paste_link != paste_link_with_password && (
+          <div role="tablist" className="tabs tabs-boxed bg-base-content/10">
+            <a
+              onClick={() => handleSetShowLink("normal")}
+              role="tab"
+              className={`tab ${showLink === "normal" ? "tab-active" : ""}`}
+            >
+              Share link
+            </a>
+            <a
+              onClick={() => handleSetShowLink("password")}
+              role="tab"
+              className={`tab ${showLink === "password" ? "tab-active" : ""}`}
+            >
+              Share link (with password)
+            </a>
+          </div>
+        )}
         {!data.requiresPassword && (
           <CustomInput
             name="paste-link"
-            value={`${PASTE_PATH}/${props.pasteId}`}
+            value={
+              showLink === "normal" ? paste_link : paste_link_with_password
+            }
             placeholder="Paste link"
             options={{
               editable: false,
@@ -211,7 +313,7 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
               label="Password"
               options={{
                 editable: true,
-                allowedChars: RegexPatterns.OnlyLetters,
+                allowedChars: RegexPatterns.LettersNumbersAndSpecialChars,
                 limit: 30,
                 hideContent: true,
               }}

@@ -5,7 +5,7 @@ import { fetchAuthUser } from "./data/user";
 import { user } from "../../../auth-schema";
 import { authClient } from "../../lib/utils/react-auth-client";
 import { navigate } from "astro:transitions/client";
-import { APP_URL, AUTH_PATH } from "../../consts/paths";
+import { APP_PATH, APP_URL, AUTH_PATH, PASTE_PATH } from "../../consts/paths";
 import { toast } from "sonner";
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { useStore } from "@nanostores/react";
@@ -42,10 +42,10 @@ export const Navbar = () => {
   }, [$theme]);
 
   return (
-    <div className="h-fit bg-base-200-content/10 w-full flex place-items-center place-self-center border-b border-base-content/15   backdrop-blur-sm px-4 py-2 z-30">
-      <div className="flex-1">
+    <div className=" h-fit bg-base-100 w-full flex place-items-center place-self-center    backdrop-blur-sm px-4 py-2 z-30">
+      <div className="flex-1 ">
         <a
-          href={APP_URL}
+          href={APP_PATH}
           className={`px-4 py-2 flex gap-2 place-content-center place-items-center w-fit ${
             ctheme == "light"
               ? "bg-primary/50 hover:bg-primary filter invert"
@@ -53,7 +53,7 @@ export const Navbar = () => {
           } hover:bg-base-content/10 transition-all font-extrabold rounded-box`}
         >
           <img src="/favicon.png" className="w-4 inline-block" />
-          <span>
+          <span className="hidden md:block">
             <span
               className={`text-primary/80 ${
                 ctheme == "light" && "filter invert"
@@ -70,6 +70,7 @@ export const Navbar = () => {
           </span>
         </a>
       </div>
+      <NavMenu />
       <div className="flex-none">
         {isFetching ? (
           <div className="skeleton h-12 w-24"></div>
@@ -81,7 +82,7 @@ export const Navbar = () => {
 
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-300 border border-base-content/25  backdrop-blur-sm rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-base-100 border border-base-content/25  backdrop-blur-sm rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li onClick={handleLogout}>
                 <a>Logout</a>
@@ -100,5 +101,34 @@ export const Navbar = () => {
         )}
       </div>
     </div>
+  );
+};
+
+export const NavMenu = () => {
+  const features = [
+    {
+      title: "Paste",
+      icon: "mdi:content-paste",
+      link: `${PASTE_PATH}`,
+    },
+  ];
+  return (
+    <ul className="menu menu-horizontal  rounded-box">
+      <li>
+        <details>
+          <summary>Tools</summary>
+          <ul className="border w-fit border-base-content/5">
+            {features.map((feature) => (
+              <li key={feature.title}>
+                <a href={feature.link}>
+                  <Icon icon={feature.icon} />
+                  {feature.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </li>
+    </ul>
   );
 };

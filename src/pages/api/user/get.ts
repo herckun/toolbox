@@ -1,5 +1,6 @@
 import type { APIContext } from "astro";
 import { UserHandler } from "../../../lib/handlers/UserHandler";
+import { delay } from "../../../lib/helpers/delay";
 
 export const GET = async (context: APIContext) => {
   try {
@@ -14,7 +15,7 @@ export const GET = async (context: APIContext) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   } catch (err: any) {
     return new Response(
@@ -26,7 +27,7 @@ export const GET = async (context: APIContext) => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
   }
 };

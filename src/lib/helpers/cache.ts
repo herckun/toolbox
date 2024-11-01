@@ -3,7 +3,7 @@ import { redisManager } from "../cache/redis";
 export const cacheResult = async (
   key: string,
   ttl: number,
-  callback: () => any,
+  callback: () => any
 ) => {
   try {
     const data = await redisManager.get(key);
@@ -23,7 +23,7 @@ export const cacheResult = async (
         cached: true,
         expiresAt: new Date().getTime() + ttl * 1000,
       }),
-      ttl,
+      ttl
     );
   } catch (err) {
     console.error("Failed to cache result in Redis", err);

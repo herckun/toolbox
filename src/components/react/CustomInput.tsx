@@ -27,7 +27,7 @@ export const CustomInput = (props: {
   register?: (
     name: string,
     onChange: () => ComponentState,
-    onValidityChange: (isValid: boolean) => void,
+    onValidityChange: (isValid: boolean) => void
   ) => void;
   unregister?: (name: string) => void;
 }) => {
@@ -59,7 +59,7 @@ export const CustomInput = (props: {
         value: inputValue,
         isValid,
       }),
-      (valid) => setIsValid(valid),
+      (valid) => setIsValid(valid)
     );
     if (props.options?.allowEmpty && inputValue.length === 0) {
       setIsValid(true);
@@ -100,7 +100,7 @@ export const CustomInput = (props: {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { value } = e.target;
     if (props.options?.editable) {
@@ -117,7 +117,8 @@ export const CustomInput = (props: {
 
     if (props.options?.limit && inputValue.length > props.options.limit) {
       valid = false;
-      message = `Input exceeds the limit of ${props.options.limit} characters.`;
+      message = ` Input exceeds the limit of ${props.options.limit} characters.`;
+      toast.error(message, { id: `${props.name}-limit-error` });
     }
 
     if (props.options?.allowEmpty && inputValue.length === 0) {
@@ -129,6 +130,7 @@ export const CustomInput = (props: {
       ) {
         valid = false;
         message = `${describeAllowedChars(props.options.allowedChars)}`;
+        toast.error(message, { id: `${props.name}-allow-chars-error` });
       }
     }
 
@@ -148,6 +150,7 @@ export const CustomInput = (props: {
         valid = false;
         message = `Value should be less than or equal to ${props.options.maxValue}.`;
       }
+      toast.error(message, { id: `${props.name}-min-max-error` });
     }
 
     setIsValid(valid);
@@ -156,19 +159,17 @@ export const CustomInput = (props: {
       toast.dismiss(props.name);
     } else {
       inputRef.current?.classList.add("border-red-400");
-      toast.error(
-        `${
-          props.name.charAt(0).toUpperCase() + props.name.slice(1)
-        } field contains errors: ${message}`,
-        {
-          id: props.name,
-        },
-      );
     }
     props.onValidityChange?.(valid);
   };
 
-  const currentSize = props.options?.size || "xs"; // Default size set to "sm"
+  const currentSize = props.options?.size || "xs";
+
+  useEffect(() => {
+    if (props.value !== inputValue) {
+      setInputValue(props.value);
+    }
+  }, [props.value]);
 
   return (
     <div
@@ -206,7 +207,7 @@ export const CustomInput = (props: {
           />
         )}
         <div
-          className={`absolute ${props.options?.limit && debouncedInputValue.length > 0 ? "right-0 top-0 gap-px p-px" : "right-1 gap-1 p-1"}  flex  bg-base-100/50 backdrop-blur-xl  rounded-btn ${
+          className={`absolute right-1 gap-1 p-1  flex  bg-base-100/50 backdrop-blur-xl  rounded-btn ${
             !props.options?.clipboard && !props.options?.hideContent
               ? "hidden"
               : ""
@@ -231,16 +232,6 @@ export const CustomInput = (props: {
           )}
         </div>
       </div>
-
-      {props.options?.limit && debouncedInputValue.length > 0 && (
-        <span
-          className={`bg-base-200/80 p-2 rounded-tl-btn align-middle text-center text-[0.50rem] backdrop-blur-xl flex place-content-center place-items-center text-base-content/80 absolute bottom-0 right-0 ${
-            inputValue.length > props.options.limit ? "text-red-400" : ""
-          }`}
-        >
-          {inputValue.length}/{props.options.limit}
-        </span>
-      )}
     </div>
   );
 };

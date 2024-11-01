@@ -13,7 +13,7 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
   detectedLang = detectedLang === "unknown" ? "text" : detectedLang;
 
   const $theme = useStore(theme);
-  const [html, setHtml] = useState("");
+  const [html, setHtml] = useState("Loading...");
   const [lang, setLang] = useState(props.lang ?? detectedLang);
 
   useEffect(() => {
@@ -71,7 +71,9 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
         </div>
       </div>
       <div
-        className={`${$theme == "dark" ? "bg-base-content/15" : "bg-base-content/90"} rounded-box p-4 md:p-6 break-all w-full`}
+        className={`${
+          $theme == "dark" ? "bg-base-content/15" : "bg-base-content/90"
+        } rounded-box p-4 md:p-6 break-all w-full`}
         dangerouslySetInnerHTML={{ __html: html }}
       ></div>
     </div>

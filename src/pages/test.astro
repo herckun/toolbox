@@ -1,0 +1,13 @@
+---
+import crypto from "node:crypto";
+
+import { decryptSymmetric, encryptSymmetric } from '../lib/helpers/encrypt';
+const salt = crypto.randomBytes(32).toString('base64');
+const key = crypto.scryptSync("test", salt, 32);
+const encrypted =  encryptSymmetric(key, "test");
+const decrypted =  decryptSymmetric(key, encrypted.ciphertext, encrypted.iv, encrypted.tag);
+---
+
+{JSON.stringify(encrypted)}
+{JSON.stringify(decrypted)}
+{salt}

@@ -22,13 +22,18 @@ export const getPaste = async (id: string, password?: string) => {
   const url =
     password === undefined
       ? `${baseUrl}/api/paste/${id}/get`
-      : `${baseUrl}/api/paste/${id}/get?password=${password}`;
+      : `${baseUrl}/api/paste/${id}/get?password=${encodeURIComponent(
+          password
+        )}`;
   const f = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   });
+  if (!f.ok) {
+    throw new Error("An error occurred while getting the paste.");
+  }
   return await f.json();
 };
 
@@ -53,4 +58,15 @@ export const getPastesForUser = async (
     pastes: ResponsePaste[];
     cursor: string | undefined;
   };
+};
+
+export const deletePaste = async (id: string) => {
+  const baseUrl = location.protocol + "//" + location.host;
+  const f = await fetch(`${baseUrl}/api/paste/${id}/delete`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return f;
 };

@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 import type { APIContext } from "astro";
 import { UserHandler } from "./UserHandler";
 import { db } from "../../db/db";
@@ -9,6 +11,9 @@ import { validateInput } from "../helpers/validators";
 import { TITLE_MAX_LENGTH } from "../../consts/requirements";
 import { PASTE_PATH } from "../../consts/paths";
 import { decodeBase64ToObject, encodeObjectToBase64 } from "../helpers/encode";
+import { decryptSymmetric, encryptSymmetric } from "../helpers/encrypt";
+import { RegexPatterns } from "../helpers/parsers";
+import { invalidateCache } from "../helpers/cache";
 
 export type Paste = {
   title: string;
@@ -20,6 +25,7 @@ export type ResponsePaste = {
   id: string;
   title: string;
   link: string;
+  userId: string;
   createdAt: Date;
 };
 
@@ -34,9 +40,23 @@ export class PasteHandler {
         required: true,
         maxLength: TITLE_MAX_LENGTH,
       }) ||
-      !validateInput(pasteData.content, { required: true })
+      !validateInput(pasteData.content, { required: true }) ||
+      (pasteData.password &&
+        !validateInput(pasteData.password, {
+          regex: RegexPatterns.LettersNumbersAndSpecialChars,
+        }))
     ) {
       throw new Error("Invalid input");
+    }
+
+    let content = pasteData.content;
+    if (pasteData.password) {
+      const key = crypto.scryptSync(
+        pasteData.password,
+        import.meta.env.ENCRYPT_SALT,
+        32
+      );
+      content = JSON.stringify(encryptSymmetric(key, pasteData.content));
     }
     // Create paste
     const id = await db
@@ -44,7 +64,7 @@ export class PasteHandler {
       .values({
         id: generateRandomId(8),
         title: pasteData.title,
-        content: pasteData.content,
+        content: content,
         userId: user.id,
         passwordHash: hashedString(pasteData.password),
         expiresAt: addDays(new Date(), 1),
@@ -54,12 +74,13 @@ export class PasteHandler {
       .returning({
         id: paste.id,
       });
+    await invalidateCache(`pastes-${user.id}-${undefined}`);
+
     return id;
   }
 
   static async get(context: APIContext, pasteId: string, password?: string) {
     const user = await UserHandler.getAuthentificatedUser(context);
-
     // Get paste
     const pasteData: SelectPaste[] = await db
       .select()
@@ -71,16 +92,13 @@ export class PasteHandler {
       title: pasteData[0].title,
       content: pasteData[0].content,
       createdAt: pasteData[0].createdAt,
+      isCreator: user?.id === pasteData[0].userId,
     };
 
     if (pasteData[0].passwordHash == hashedString("")) {
       return unlockedData;
     }
 
-    if (user && user.id === pasteData[0].userId) {
-      return unlockedData;
-    }
-    console.log(password);
     if (!password) {
       return {
         id: pasteData[0].id,
@@ -91,6 +109,15 @@ export class PasteHandler {
         throw new Error("Invalid password");
       }
     }
+    const key = crypto.scryptSync(password, import.meta.env.ENCRYPT_SALT, 32);
+    const encrypted = JSON.parse(pasteData[0].content);
+    const decrypted = decryptSymmetric(
+      key,
+      encrypted.ciphertext,
+      encrypted.iv,
+      Buffer.from(encrypted.tag)
+    );
+    unlockedData.content = decrypted;
 
     return unlockedData;
   }
@@ -129,17 +156,70 @@ export class PasteHandler {
         id: query[i].id,
         title: query[i].title,
         link: `${PASTE_PATH}/${query[i].id}`,
+        userId: query[i].userId,
         createdAt: query[i].createdAt,
       });
     }
-    return {
-      pastes,
-      cursor: query[query.length - 1]
-        ? encodeObjectToBase64({
+
+    const newCursor =
+      query.length == pageSize && query[query.length - 1]
+        ? {
             id: query[query.length - 1].id,
             createdAt: query[query.length - 1].createdAt.getTime(),
-          })
-        : undefined,
+          }
+        : undefined;
+    const encodedCursor = newCursor
+      ? encodeObjectToBase64(newCursor)
+      : undefined;
+
+    //query again after new cursor to check if there are more pastes
+    let hasMore = false;
+    if (query.length == pageSize) {
+      const query2 = await db
+        .select()
+        .from(paste)
+        .where(
+          and(
+            eq(paste.userId, userId),
+            newCursor
+              ? or(
+                  lt(paste.createdAt, new Date(newCursor.createdAt)),
+                  and(
+                    eq(paste.createdAt, new Date(newCursor.createdAt)),
+                    lt(paste.id, newCursor.id)
+                  )
+                )
+              : undefined
+          )
+        )
+        .limit(pageSize)
+        .orderBy(desc(paste.createdAt), desc(paste.id));
+      if (query2.length > 0) {
+        hasMore = true;
+      }
+    }
+
+    return {
+      pastes,
+      cursor: hasMore ? encodedCursor : undefined,
     };
+  }
+  static async delete(context: APIContext, pasteId: string) {
+    const user = await UserHandler.getAuthentificatedUser(context);
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    const pasteData: SelectPaste[] = await db
+      .select()
+      .from(paste)
+      .where(eq(paste.id, pasteId));
+    if (pasteData[0].userId !== user.id) {
+      throw new Error("Unauthorized");
+    }
+    await db.delete(paste).where(eq(paste.id, pasteId));
+    await invalidateCache(
+      `paste-${pasteId}-${pasteData[0].passwordHash ?? hashedString("")}`
+    );
+    await invalidateCache(`pastes-${pasteData[0].userId}-${undefined}`);
   }
 }

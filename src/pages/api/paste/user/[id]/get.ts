@@ -1,6 +1,8 @@
 import type { APIContext } from "astro";
 import { PasteHandler } from "../../../../../lib/handlers/PasteHandler";
 import { decodeBase64ToObject } from "../../../../../lib/helpers/encode";
+import { delay } from "../../../../../lib/helpers/delay";
+import { cacheResult } from "../../../../../lib/helpers/cache";
 
 export const GET = async (context: APIContext) => {
   try {
@@ -12,7 +14,13 @@ export const GET = async (context: APIContext) => {
     if (!id) {
       throw new Error("Invalid input");
     }
-    const pastes = await PasteHandler.getPastesForUser(id, cursor);
+    const pastes = await cacheResult(
+      `pastes-${id}-${cursor}`,
+      500,
+      async () => {
+        return await PasteHandler.getPastesForUser(id, cursor);
+      }
+    );
     return new Response(JSON.stringify(pastes), {
       status: 200,
       headers: {
@@ -20,16 +28,17 @@ export const GET = async (context: APIContext) => {
       },
     });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({
-        message:
-          import.meta.env.MODE === "development"
-            ? err.message
-            : "Internal server error",
-      }),
-      {
-        status: 500,
-      }
-    );
+    if (err)
+      return new Response(
+        JSON.stringify({
+          message:
+            import.meta.env.MODE === "development"
+              ? err.message
+              : "Internal server error",
+        }),
+        {
+          status: 500,
+        }
+      );
   }
 };

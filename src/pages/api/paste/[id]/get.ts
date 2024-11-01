@@ -1,6 +1,8 @@
 import type { APIContext } from "astro";
 import { PasteHandler } from "../../../../lib/handlers/PasteHandler";
 import { delay } from "../../../../lib/helpers/delay";
+import { cacheResult } from "../../../../lib/helpers/cache";
+import { hashedString } from "../../../../lib/helpers/generators";
 
 export const GET = async (context: APIContext) => {
   try {
@@ -11,7 +13,13 @@ export const GET = async (context: APIContext) => {
     const url = new URL(context.request.url);
     const searchParams = url.searchParams;
     const password = searchParams.get("password") ?? undefined;
-    const pasteData = await PasteHandler.get(context, id, password);
+    const pasteData = await cacheResult(
+      `paste-${id}-${hashedString(password ?? "")}`,
+      500,
+      async () => {
+        return await PasteHandler.get(context, id, password);
+      }
+    );
     return new Response(JSON.stringify(pasteData), {
       status: 200,
     });
@@ -25,7 +33,7 @@ export const GET = async (context: APIContext) => {
       }),
       {
         status: 500,
-      },
+      }
     );
   }
 };
