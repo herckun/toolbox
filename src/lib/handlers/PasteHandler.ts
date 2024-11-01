@@ -209,10 +209,12 @@ export class PasteHandler {
     if (!user) {
       throw new Error("User not authenticated");
     }
+
     const pasteData: SelectPaste[] = await db
       .select()
       .from(paste)
       .where(eq(paste.id, pasteId));
+
     if (pasteData[0].userId !== user.id) {
       throw new Error("Unauthorized");
     }
