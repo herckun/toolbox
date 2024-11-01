@@ -1,6 +1,6 @@
 import type { APIContext } from "astro";
 import { authClient } from "../../lib/utils/react-auth-client";
-import { APP_PATH, AUTH_PATH } from "../../consts/paths";
+import { AUTH_PATH } from "../../consts/paths";
 
 export const GET = async (context: APIContext) => {
   try {
@@ -11,7 +11,7 @@ export const GET = async (context: APIContext) => {
         status: 400,
       });
     }
-    const { data, error } = await authClient.verifyEmail({
+    const { error } = await authClient.verifyEmail({
       query: {
         token: token,
       },
