@@ -42,11 +42,11 @@ export const AuthenticateBox = () => {
 
   const cachedPlaceholderPassword = useMemo(
     () => generatePlaceholderPassword(),
-    [],
+    []
   );
 
   const signUp = async () => {
-    const { data, error } = await authClient.signUp.email(
+    await authClient.signUp.email(
       {
         email: email,
         password: password,
@@ -67,12 +67,12 @@ export const AuthenticateBox = () => {
             id: "auth-error",
           });
         },
-      },
+      }
     );
   };
 
   const signIn = async () => {
-    const { data, error } = await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         email: email,
         password: password,
@@ -99,7 +99,7 @@ export const AuthenticateBox = () => {
             id: "auth-error",
           });
         },
-      },
+      }
     );
   };
 

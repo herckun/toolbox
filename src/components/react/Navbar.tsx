@@ -26,7 +26,7 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     toast.loading("Logging out...");
-    const { data, error } = await authClient.signOut();
+    await authClient.signOut();
     if (!error) {
       toast.info("Logged out successfully, redirecting...");
       navigate(`${APP_URL}${AUTH_PATH}`);
