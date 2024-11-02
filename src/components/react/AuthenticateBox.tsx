@@ -119,7 +119,7 @@ export const AuthenticateBox = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full  px-2 md:px-24 rounded-box ">
+    <div className="flex flex-col gap-2 w-full py-12 md:py-4 px-2 md:px-24 rounded-box ">
       <div role="tablist" className="tabs tabs-boxed bg-neutral-content/5">
         <a
           onClick={() => switchAuthMethod("email")}
