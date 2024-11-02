@@ -173,7 +173,7 @@ export const CustomInput = (props: {
 
   return (
     <div
-      className={`w-full flex flex-col place-content-center gap-px overflow-hidden font-mono relative bg-base-content/0 backdrop-blur-xl rounded-btn ${
+      className={`w-full flex flex-col place-content-center gap-px overflow-hidden font-mono relative  backdrop-blur-xl rounded-btn ${
         sizeClasses[currentSize]
       }  border-b transition-all ${
         !isValid && valueChanged ? "border-red-400" : "border-transparent"

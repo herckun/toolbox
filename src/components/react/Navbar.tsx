@@ -42,7 +42,7 @@ export const Navbar = () => {
   }, [$theme]);
 
   return (
-    <div className=" h-fit bg-base-100 w-full flex place-items-center place-self-center    backdrop-blur-sm px-4 py-2 z-30">
+    <div className=" h-fit bg-base-100 w-full flex place-items-center place-self-center    backdrop-blur-sm px-4 py-2 z-50">
       <div className="flex-1 ">
         <a
           href={APP_PATH}
