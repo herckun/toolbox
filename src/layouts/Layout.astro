@@ -25,7 +25,7 @@ const { title } = Astro.props;
     <Toaster client:only="react" />
 
     <body>
-        <div class="flex flex-wrap gap-0 h-screen w-screen ">
+        <div class="flex flex-wrap gap-0 h-screen w-full ">
             <Navbar client:load />
             <div class="flex-1">
                 <slot />
