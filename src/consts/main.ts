@@ -1,5 +1,5 @@
-export const APP_NAME = "ToolBox";
-export const APP_NAME_LOGO = "Tool Box";
+export const APP_NAME = "herc's toolbox";
+export const APP_NAME_LOGO = "|tool Box";
 
 export const APP_DESCRIPTION = "PasteBin alternative";
 

@@ -179,7 +179,7 @@ export const CustomInput = (props: {
         !isValid && valueChanged ? "border-red-400" : "border-transparent"
       }`}
     >
-      <div className="text-xs h-6 p-1 text-base-content font-light lowercase block">
+      <div className="text-xs h-6 p-1 text-base-content  lowercase block">
         {props.label}
       </div>
 

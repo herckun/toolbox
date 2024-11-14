@@ -12,6 +12,7 @@ export const createPaste = async (pasteData: Paste) => {
       title: pasteData.title == "" ? `none` : pasteData.title,
       content: pasteData.content,
       password: pasteData.password,
+      syntaxHighlight: pasteData.syntaxHighlight,
     }),
   });
   return f;

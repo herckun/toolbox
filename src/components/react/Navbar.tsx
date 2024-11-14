@@ -52,7 +52,10 @@ export const Navbar = () => {
               : "bg-base-content/5"
           } hover:bg-base-content/10 transition-all font-extrabold rounded-box`}
         >
-          <img src="/favicon.png" className="w-4 inline-block" />
+          <img
+            src="/herc_logo.jpg"
+            className="w-9 rounded-xl overflow-hidden inline-block"
+          />
           <span className="hidden md:block">
             <span
               className={`text-primary/80 ${
@@ -64,7 +67,6 @@ export const Navbar = () => {
             <span
               className={`text-primary ${ctheme == "light" && "filter invert"}`}
             >
-              {" "}
               {APP_NAME_LOGO.split(" ")[1]}
             </span>
           </span>

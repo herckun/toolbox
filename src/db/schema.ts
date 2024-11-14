@@ -64,6 +64,7 @@ export const paste = sqliteTable("paste", {
   expiresAt: integer("expiresAt", {
     mode: "timestamp",
   }).notNull(),
+  syntaxHighlight: text("syntax_highlight"),
   createdAt: integer("createdAt", {
     mode: "timestamp",
   }).notNull(),
