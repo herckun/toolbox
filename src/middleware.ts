@@ -4,7 +4,7 @@ import { sequence } from "astro:middleware";
 import { auth } from "./lib/auth";
 import { AUTH_PATH } from "./consts/paths";
 
-const protectedPaths = ["/app", "/api/paste/create", "/api/user/*"];
+const protectedPaths = ["/app", "/api/user/*"];
 const excludedPaths: string[] = ["/api/auth/*", "/api/paste/*"];
 
 export const cors = defineMiddleware((context, next) => {

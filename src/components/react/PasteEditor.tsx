@@ -12,6 +12,7 @@ import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { NotSignedIn } from "./Errors";
 import { CodeHL } from "./CodeHL";
 import { ButtonWithConfirmation } from "./ButtonWithConfirmation";
+import { highlight_langs } from "../../consts/misc";
 
 export const PasteEditor = (props: {
   mode: "create" | "view";
@@ -23,6 +24,7 @@ export const PasteEditor = (props: {
   const [pasteTitle, setPasteTitle] = useState("");
   const [pasteContent, setPasteContent] = useState("");
   const [pastePassword, setPasePassword] = useState("");
+  const [pasteSyntaxHighlight, setPasteSyntaxHighlight] = useState("text");
   const [showSettings, setShowSettings] = useState(false);
 
   const handleSetPasteTitle = (value: string) => {
@@ -33,6 +35,9 @@ export const PasteEditor = (props: {
   };
   const handleSetPasteContent = (value: string) => {
     setPasteContent(value);
+  };
+  const handleLangChange = (value: string) => {
+    setPasteSyntaxHighlight(value);
   };
 
   const switchShowSettings = () => {
@@ -47,6 +52,7 @@ export const PasteEditor = (props: {
       title: pasteTitle,
       password: pastePassword,
       content: pasteContent,
+      syntaxHighlight: pasteSyntaxHighlight,
     });
     if (!create.ok) {
       toast.dismiss("create-paste");
@@ -81,7 +87,6 @@ export const PasteEditor = (props: {
 
   return (
     <div className="flex flex-col p-4 gap-2 bg-base-100 min-h-[80vh] md:min-h-full grow rounded-box border flex-flex-col border-base-content/5 relative overflow-hidden">
-      {!props.user && <NotSignedIn />}
       <h1 className="py-2 w-full px-1 text-lg font-semibold">New Paste</h1>
       {pasteTitle.length > 0 && (
         <h1 className="py-2 px-1 text-sm font-semibold">{pasteTitle}</h1>
@@ -119,6 +124,7 @@ export const PasteEditor = (props: {
               label="title"
               options={{
                 editable: true,
+                allowEmpty: true,
                 allowedChars: RegexPatterns.LettersNumbersAndSpaces,
                 limit: 100,
               }}
@@ -147,6 +153,20 @@ export const PasteEditor = (props: {
                 will need the password to view it.
               </span>
             )}
+            <span className="text-xs h-6 p-1 text-base-content  lowercase block">
+              Syntax Highlighting
+            </span>
+            <select
+              defaultValue={pasteSyntaxHighlight}
+              onChange={(e) => handleLangChange(e.target.value)}
+              className="select select-ghost bg-base-content/15 grow  w-full  "
+            >
+              {highlight_langs.map((l) => (
+                <option key={l} value={l}>
+                  {`${l}`}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
@@ -296,7 +316,9 @@ const PasteViewer = (props: { pasteId: string; password?: string }) => {
             }}
           ></CustomInput>
         )}
-        {!data.requiresPassword && <CodeHL content={data.content} />}
+        {!data.requiresPassword && (
+          <CodeHL content={data.content} lang={data.syntaxHighlight} />
+        )}
 
         {data.requiresPassword && (
           <div className="flex flex-col gap-2 grow  place-content-center justify-center self-center">
@@ -345,8 +367,8 @@ export const About = () => {
           the protection of a password to protect your paste if needed.
         </li>
         <li>
-          You will have to be logged in to create a new paste, but sharing them
-          is as easy as copy-pasting the paste link
+          You can create a paste without an account, but you will not be able to
+          delete it later.
         </li>
         <li>
           {" "}

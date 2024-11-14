@@ -14,14 +14,15 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
 
   const $theme = useStore(theme);
   const [html, setHtml] = useState("Loading...");
-  const [lang, setLang] = useState(props.lang ?? detectedLang);
+  const [lang, setLang] = useState(
+    props.lang == "text" ? detectedLang : props.lang || detectedLang
+  );
 
   useEffect(() => {
     (async () => {
       let h = await codeToHtml(props.content, {
         lang: lang,
-        theme: "vitesse-dark",
-        defaultColor: "dark",
+        theme: $theme == "dark" ? "github-dark" : "github-light",
         transformers: [
           transformerRenderWhitespace(),
           {
@@ -34,7 +35,7 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
       });
       setHtml(h);
     })();
-  }, [lang]);
+  }, [lang, $theme]);
 
   const handleLangChange = (e: any) => {
     setLang(e.target.value);
@@ -72,8 +73,8 @@ export const CodeHL = (props: { content: string; lang?: string }) => {
       </div>
       <div
         className={`${
-          $theme == "dark" ? "bg-base-content/15" : "bg-base-content/90"
-        } rounded-box p-4 md:p-6 break-all w-full`}
+          $theme == "dark" ? "bg-neutral" : " bg-neutral"
+        } rounded-box p-4 md:p-6 break-all w-full `}
         dangerouslySetInnerHTML={{ __html: html }}
       ></div>
     </div>

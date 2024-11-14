@@ -8,6 +8,7 @@ export const PUT = async (context: APIContext) => {
       title: body.title,
       content: body.content,
       password: body.password,
+      syntaxHighlight: body.syntaxHighlight,
     };
     const pasteId = await PasteHandler.create(context, pasteData);
     return new Response(
@@ -16,7 +17,7 @@ export const PUT = async (context: APIContext) => {
       }),
       {
         status: 200,
-      },
+      }
     );
   } catch (err: any) {
     return new Response(
@@ -25,7 +26,7 @@ export const PUT = async (context: APIContext) => {
       }),
       {
         status: 500,
-      },
+      }
     );
   }
 };

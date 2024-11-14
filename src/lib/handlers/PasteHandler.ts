@@ -19,6 +19,7 @@ export type Paste = {
   title: string;
   content: string;
   password: string;
+  syntaxHighlight: string;
 };
 
 export type ResponsePaste = {
@@ -32,9 +33,6 @@ export type ResponsePaste = {
 export class PasteHandler {
   static async create(context: APIContext, pasteData: Paste) {
     const user = await UserHandler.getAuthentificatedUser(context);
-    if (!user) {
-      throw new Error("User not authenticated");
-    }
     if (
       !validateInput(pasteData.title, {
         required: true,
@@ -65,8 +63,9 @@ export class PasteHandler {
         id: generateRandomId(8),
         title: pasteData.title,
         content: content,
-        userId: user.id,
+        userId: user ? user.id : "NO_USER",
         passwordHash: hashedString(pasteData.password),
+        syntaxHighlight: pasteData.syntaxHighlight,
         expiresAt: addDays(new Date(), 1),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -74,8 +73,9 @@ export class PasteHandler {
       .returning({
         id: paste.id,
       });
-    await invalidateCache(`pastes-${user.id}-${undefined}`);
-
+    if (user) {
+      await invalidateCache(`pastes-${user.id}-${undefined}`);
+    }
     return id;
   }
 
@@ -91,6 +91,7 @@ export class PasteHandler {
       id: pasteData[0].id,
       title: pasteData[0].title,
       content: pasteData[0].content,
+      syntaxHighlight: pasteData[0].syntaxHighlight,
       createdAt: pasteData[0].createdAt,
       isCreator: user?.id === pasteData[0].userId,
     };
