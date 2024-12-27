@@ -1,4 +1,4 @@
-import { APP_NAME_LOGO } from "../../consts/main";
+import { APP_NAME_LOGO, ENABLED_TOOLS } from "../../consts/main";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
 import { fetchAuthUser } from "./data/user";
@@ -107,24 +107,17 @@ export const Navbar = () => {
 };
 
 export const NavMenu = () => {
-  const features = [
-    {
-      title: "Paste",
-      icon: "mdi:content-paste",
-      link: `${PASTE_PATH}`,
-    },
-  ];
   return (
-    <ul className="menu menu-horizontal  rounded-box">
+    <ul className="menu menu-horizontal rounded-box">
       <li>
         <details>
           <summary>Tools</summary>
-          <ul className="border w-fit border-base-content/5">
-            {features.map((feature) => (
-              <li key={feature.title}>
+          <ul className="border w-56 right-0 border-base-content/5">
+            {ENABLED_TOOLS.map((feature) => (
+              <li className="w-full" key={feature.title}>
                 <a href={feature.link}>
                   <Icon icon={feature.icon} />
-                  {feature.title}
+                  <span className="inline-block">{feature.title}</span>
                 </a>
               </li>
             ))}
