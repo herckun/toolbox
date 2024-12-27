@@ -19,9 +19,12 @@ export const RegexPatterns = {
   TimeHHMM: /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/,
   DecimalUpToTwoPlaces: /^\d+(\.\d{1,2})?$/,
   Empty: /^$/,
+  YoutubeLink:
+    /^(https:\/\/)?(www\.)?youtube\.com\/watch\?v=[\w-]+(&[\w-]+=[\w-]+)*$/,
 };
 
 export const describeAllowedChars = (regex: RegExp): string => {
+  console.log(regex);
   for (const [key, pattern] of Object.entries(RegexPatterns)) {
     if (regex.source === pattern.source && regex.flags === pattern.flags) {
       switch (key) {
@@ -57,6 +60,8 @@ export const describeAllowedChars = (regex: RegExp): string => {
           return "Time format (HH:MM, 24-hour)";
         case "DecimalUpToTwoPlaces":
           return "Decimal number with up to two decimal places";
+        case "YoutubeLink":
+          return "Value needs to be a YouTube video link";
       }
     }
   }
