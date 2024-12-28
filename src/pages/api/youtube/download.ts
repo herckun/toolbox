@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import { UserHandler } from "../../../lib/handlers/UserHandler";
 import ytdl from "@distube/ytdl-core";
+import { hashedString } from "../../../lib/helpers/generators";
 
 export const prerender = false;
 
@@ -34,9 +35,11 @@ export const GET = async (context: APIContext) => {
       },
     });
 
+    const filenameHash = hashedString(info.videoDetails.title);
+
     const headers = new Headers({
       "Content-Type": "video/mp4",
-      "Content-Disposition": `attachment; filename="${info.videoDetails.title}.mp4"`,
+      "Content-Disposition": `attachment; filename="${filenameHash}.mp4"`,
     });
 
     return new Response(readableStream as ReadableStream, { headers });
@@ -45,7 +48,7 @@ export const GET = async (context: APIContext) => {
       JSON.stringify({
         message:
           import.meta.env.MODE === "development"
-            ? err.message
+            ? err.stack
             : "Internal server error",
       }),
       {
