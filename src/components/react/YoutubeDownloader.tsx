@@ -15,7 +15,8 @@ export const YoutubeDownloader = (props: { user: any }) => {
 
   const handleDownload = async () => {
     //open new tab with download link
-    const videoId = url.split("v=")[1];
+
+    const videoId = new URL(url).searchParams.get("v");
     const downloadUrl = `/api/youtube/download?id=${videoId}&quality=${quality}`;
     window.open(downloadUrl, "_blank");
   };
@@ -70,14 +71,6 @@ export const About = () => {
         <li>
           This tool allows you to download videos from Youtube. Just paste the
           URL of the video you want to download and select the quality.
-        </li>
-        <li>
-          The video will be downloaded in MP4 format with the title of the video
-          as the filename.
-        </li>
-        <li>
-          The video will be downloaded in MP4 format with the title of the video
-          as the filename.
         </li>
       </ul>
     </div>
