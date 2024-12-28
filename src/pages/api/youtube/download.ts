@@ -46,7 +46,10 @@ export const GET = async (context: APIContext) => {
   } catch (err: any) {
     return new Response(
       JSON.stringify({
-        message: import.meta.env.MODE === "development" ? err.stack : err.stack,
+        message:
+          import.meta.env.MODE === "development"
+            ? err.stack
+            : "Internal server error",
       }),
       {
         status: 500,
